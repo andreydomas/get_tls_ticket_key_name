@@ -1,1 +1,1 @@
-# get_tls_ticket_key_name
+## SynopsisTLS sessions tickets key_name dump utility. Useful for monitoring purposes (key rotation).## LicenseGPLv3
