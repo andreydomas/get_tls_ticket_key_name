@@ -34,7 +34,7 @@
 BIO *bio_stderr;
 int bool_options = 0;
 int exit_code = 0;
-char *host;
+char *host = NULL;
 
 int error(char *msg) {
     if (bool_options & BOOL_OPT_VERBOSE)
@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
             usage();
             goto exit;
         }
-        else if (--argc < 1) {
+        else if (--argc < 1 && *argv[0] != '-') {
             host = *argv;
             if (strchr(host, ':') == NULL)
                 strcat(host, ":" DEFAULT_PORT);
@@ -173,9 +173,14 @@ int main(int argc, char **argv) {
             exit_code = 1;
             goto exit;
         }
-
         argc--;
         argv++;
+    }
+
+    if (host == NULL) {
+        usage();
+        exit_code = 3;
+        goto exit;
     }
 
     get_key_name();
