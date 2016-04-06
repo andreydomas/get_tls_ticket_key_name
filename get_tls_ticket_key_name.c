@@ -60,7 +60,7 @@ void print_key_name(char key_name[KEY_NAME_LENGTH]) {
         bio_base64 = BIO_new(BIO_f_base64());
         BIO_push(bio_base64, bio_stdout);
         BIO_write(bio_base64, key_name, KEY_NAME_LENGTH);
-        BIO_flush(bio_base64);
+        (void) BIO_flush(bio_base64);
     }
 
     BIO_free_all(bio_stdout);
@@ -98,8 +98,6 @@ void get_key_name() {
 
     if(BIO_do_connect(conn) <= 0)
         error("Unable to connect to remote host");
-
-    //if(BIO_do_handshake(conn) <= 0) error();
 
     session = SSL_get_session(ssl);
     if (session == NULL)
