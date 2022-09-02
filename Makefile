@@ -7,4 +7,3 @@ clean:
 	rm -f get_tls_ticket_key_name
 
 .PHONY: all clean
-

@@ -43,7 +43,7 @@ int error(char *msg) {
     abort();
 }
 
-void print_key_name(char key_name[KEY_NAME_LENGTH]) {
+void print_key_name(const unsigned char key_name[KEY_NAME_LENGTH]) {
     BIO *bio_stdout = BIO_new_fp(stdout, BIO_NOCLOSE);
     BIO *bio_base64;
 
@@ -51,7 +51,7 @@ void print_key_name(char key_name[KEY_NAME_LENGTH]) {
         error("Unable to get stdout BIO");
 
     if (bool_options & BOOL_OPT_HEXDUMP)
-        BIO_dump_indent(bio_stdout, key_name, KEY_NAME_LENGTH, 0);
+        BIO_dump_indent(bio_stdout, (char *) key_name, KEY_NAME_LENGTH, 0);
 
     else if (bool_options & BOOL_OPT_RAW)
         BIO_write(bio_stdout, key_name, KEY_NAME_LENGTH);
@@ -103,8 +103,14 @@ void get_key_name() {
     if (session == NULL)
         error("Unable to get session");
 
-    if (session->tlsext_ticklen > 16) {
-        print_key_name((char *)session->tlsext_tick);
+    if (SSL_SESSION_has_ticket(session) == 1) {
+        const unsigned char *tick;
+        size_t len;
+        SSL_SESSION_get0_ticket(session, &tick, &len);
+
+        if (len > 16) {
+            print_key_name(tick);
+        }
     }
 
     if(conn != NULL)
